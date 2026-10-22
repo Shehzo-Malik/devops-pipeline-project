@@ -1,0 +1,32 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Code Checkout karein
+      uses: actions/checkout@v3
+
+    - name: Python setup karein
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Dependencies install karein
+      run: |
+        pip install -r requirements.txt
+
+    - name: Trivy Security Scan chalayein
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        format: 'table'
+        severity: 'CRITICAL,HIGH'
+
+    - name: Docker Image Build karein
+      run: docker build -t my-devops-app:${{ github.sha }} .
